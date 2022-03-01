@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Selcuk Kocak">
+    <meta name="email" content="koca0006@algonquinlive.com">
+    <meta name="studentId" content="040970893">
+    <!-- your meta data here -->
+    <style>
+
+        body {
+            padding: 0px;
+            margin: 0px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 7vw;
+            background-color: rgb(56, 52, 52);
+            color: white;
+        }
+
+        .calculator-grid {
+            display: grid;
+            min-height: 100vh;
+            grid-template-rows: 1fr 4fr;
+            grid-template-areas: 'display'
+                                 'keypad';
+
+        }
+
+        .keypad-grid {
+            grid-area: keypad;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .keypad-grid > button {
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            background-color: darkgray;
+            outline: none;
+            border: 0.1vw solid white;
+            color: rgb(56, 52, 52);
+        }
+
+        .keypad-grid > button:hover {
+            background-color: lightslategray;
+        }
+
+        .keypad-grid .operator {
+            background-color: orange;
+            color: white;
+        }
+
+        .keypad-grid .clear {
+            background-color: tomato;
+            color: white;
+        }
+
+        .keypad-grid .equals {
+            background-color: rgb(224, 255, 47);
+        }
+
+        .display {
+            grid-area: display;
+            display: flex;
+            justify-self: right;
+            align-items: center;
+            padding-right: 1vw;
+        }
+    </style>
+    <title>Very Simple Calculator</title>
+</head>
+<body>
+    <div class="calculator-grid">
+        <div class="display">
+            0
+        </div>
+        <div class="keypad-grid">
+            <button class="number">7</button>
+            <button class="number">8</button>
+            <button class="number">9</button>
+            <button class="operator">-</button>
+            <button class="number">4</button>
+            <button class="number">5</button>
+            <button class="number">6</button>
+            <button class="operator">/</button>
+            <button class="number">1</button>
+            <button class="number">2</button>
+            <button class="number">3</button>
+            <button class="operator">X</button>
+            <button class="number">0</button>
+            <button class="clear">C</button>
+            <button class="equals">=</button>
+            <button class="operator">+</button>
+        </div>
+    </div>
+    <script>
+        let btnNumbers = document.getElementsByClassName('number');
+        let txtDisplay = document.getElementsByClassName('display')[0];
+        let btnOperators = document.getElementsByClassName('operator');
+        let btnEquals = document.getElementsByClassName('equals')[0];
+        let btnClear = document.getElementsByClassName('clear')[0];
+
+        let currentOperator;
+        let previousValue = 0;
+        let currentValue = 0;
+
+        function appendNumber(number) {
+
+            if (txtDisplay.innerHTML.trim() == '0' && number == '0')
+                return;
+
+            if (txtDisplay.innerHTML.trim() == '0')
+                txtDisplay.innerHTML = '';
+
+            if (currentValue == 0)
+                txtDisplay.innerHTML = '';
+
+            // Making a negative number when it is used before entering a number
+            if(currentValue == 0 && previousValue == 0 && currentOperator == '-'){
+                txtDisplay.innerHTML = '-';
+                currentOperator = '';
+            }
+
+            txtDisplay.innerHTML = txtDisplay.innerHTML + number;
+            currentValue = parseInt(txtDisplay.innerHTML.trim());
+        }
+
+        function determineOperators(operator) {
+            if (currentValue == 0) {
+                currentOperator = operator;
+                return;
+            }
+            if (previousValue != 0) {
+                calculateValues();
+            } else {
+                previousValue = currentValue;
+                currentValue = 0;
+            }
+
+            currentOperator = operator;
+
+        }
+
+        function clearCalculator() {
+            currentOperator = '';
+            previousValue = 0;
+            currentValue = 0;
+            txtDisplay.innerHTML = '0';
+        }
+
+        function calculateValues() {
+            let calculation = 0;
+            const actualValue = parseInt(txtDisplay.innerHTML);
+            switch (currentOperator) {
+                case '+':
+                    calculation = previousValue + actualValue;
+                    break;
+                case '-':
+                    calculation = previousValue - actualValue;
+                    break;
+                case '/':
+                    calculation = previousValue / actualValue;
+                    break;
+                case 'X':
+                    calculation = previousValue * actualValue;
+                    break;
+                default:
+                    return;
+            }
+            previousValue = calculation;
+            currentValue = 0;
+            currentOperator = '';
+            txtDisplay.innerHTML = calculation.toString();
+
+        }
+
+
+        // Adding click event to number buttons
+        for (const button of btnNumbers) {
+            button.addEventListener('click', () => {
+                appendNumber(button.innerText);
+            })
+        }
+        // Adding click event to operator buttons
+        for (const button of btnOperators) {
+            button.addEventListener('click', () => {
+                determineOperators(button.innerText);
+            })
+        }
+        // Adding click event to clear button
+        btnClear.addEventListener('click', () => {
+            clearCalculator();
+        })
+        // Adding click event to equals button
+        btnEquals.addEventListener('click', () => {
+            calculateValues();
+        })
+    </script>
+</body>
+</html>
